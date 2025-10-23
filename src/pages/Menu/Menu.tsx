@@ -21,7 +21,7 @@ function Menu() {
 					res();
 				}, 2000);
 			});
-			const { data } = await axios.get<Product[]>(`${PREFIX}/products  asd`);
+			const { data } = await axios.get<Product[]>(`${PREFIX}/products`);
 			setProducts(data);
 		} catch (error) {
 			console.error(error);
