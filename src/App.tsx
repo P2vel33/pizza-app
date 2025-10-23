@@ -1,10 +1,17 @@
+import { useDebugValue, useState, type MouseEvent } from 'react';
 import './App.css';
 import Button from './components/Button/Button';
 
 function App() {
+  const [counter, setCounter] = useState<number>();
+
+  const addCounter = (e: MouseEvent) => {
+    console.log(e);
+  };
+
   return (
     <>
-      <Button>Кнопка</Button>
+      <Button onClick={addCounter}>Кнопка</Button>
     </>
   );
 }
