@@ -1,9 +1,9 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
+import type { Product } from '../../interfaces/product.interface';
 
 function Product() {
-	const { id } = useParams();
-	return <div>Product - {id}</div>;
+	const data = useLoaderData() as Product;
+	return <div>Product - {data.name}</div>;
 }
 
 export default Product;
