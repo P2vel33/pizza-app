@@ -3,10 +3,10 @@ import Button from '../../components/Button/Button';
 import Headling from '../../components/Headling/Headling';
 import Input from '../../components/Input/Input';
 import styles from './Login.module.css';
-import axios, { AxiosError } from 'axios';
-import { PREFIX } from '../../helpers/API';
-import { useState, type FormEvent } from 'react';
-import type { LoginResponse } from '../../interfaces/auth.interface';
+import { useEffect, type FormEvent } from 'react';
+import { useSelector } from 'react-redux';
+import { login, userActions } from '../../store/user.slice';
+import { useAppDispatch, type RootState } from '../../store/store';
 
 export type LoginForm = {
 	email: {
@@ -18,36 +18,32 @@ export type LoginForm = {
 };
 
 function Login() {
-	const [error, setError] = useState<string | undefined | null>();
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
+	const { jwt, loginErrorMessage } = useSelector((s: RootState) => s.user);
+
+	useEffect(() => {
+		if (jwt) {
+			navigate('/');
+		}
+	}, [jwt, navigate]);
 
 	const submit = async (event: FormEvent) => {
-		setError(null);
 		event.preventDefault();
+		dispatch(userActions.clearLoginError());
 		const target = event.target as typeof event.target & LoginForm;
 		const { email, password } = target;
 		await sendLogin(email.value, password.value);
 	};
 
 	const sendLogin = async (email: string, password: string) => {
-		try {
-			const { data } = await axios.post<LoginResponse>(`${PREFIX}/auth/login`, {
-				email,
-				password
-			});
-			localStorage.setItem('jwt', data.access_token);
-			navigate('/');
-		} catch (error) {
-			if (error instanceof AxiosError) {
-				setError(error.response?.data.message);
-			}
-		}
+		dispatch(login({ email: email, password: password }));
 	};
 
 	return (
 		<div className={styles['login']}>
 			<Headling>Вход</Headling>
-			{error && <div className={styles['error']}>{error}</div>}
+			{loginErrorMessage && <div className={styles['error']}>{loginErrorMessage}</div>}
 			<form className={styles['form']} onSubmit={submit}>
 				<div className={styles['field']}>
 					<label htmlFor="email">Ваш email</label>
